@@ -1,7 +1,7 @@
 # =============================
-# Student Names:
-# Group ID:
-# Date:
+# Student Names: Travis Truong, Alexander Marinkovich, Winston Chu
+# Group ID: 63
+# Date: Thursday, January 30, 2025
 # =============================
 # CISC 352 - W23
 # propagators.py
@@ -100,13 +100,51 @@ def prop_FC(csp, newVar=None):
     '''Do forward checking. That is check constraints with
        only one uninstantiated Variable. Remember to keep
        track of all pruned Variable,value pairs and return '''
-    #IMPLEMENT
-    pass
+    pruned = []
+    
+    if newVar == None:
+        constraints = csp.get_all_cons()
+    else:
+        constraints = csp.get_cons_with_var(newVar)
 
+    for constraint in constraints:
+        # Obtain list of unassigned variables in the constraint
+        unassigned = []
+        for variable in constraint.get_scope():
+            if not variable.is_assigned():
+                unassigned.append(variable)
+
+        # Should be satisfied according to Forward Checking
+        if len(unassigned) == 1:
+            variable = unassigned[0]
+            for value in variable.cur_domain():
+                if not constraint.check_var_val(variable, value):
+                    variable.prune_value(value)
+                    pruned.append((variable, value))
+            
+            if variable.cur_domain_size() == 0:
+                return False, pruned
+    return True, pruned
 
 def prop_GAC(csp, newVar=None):
     '''Do GAC propagation. If newVar is None we do initial GAC enforce
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
-    #IMPLEMENT
-    pass
+    pruned = []
+
+    if newVar == None:
+        queue = csp.get_all_cons()
+    else:
+        queue = csp.get_cons_with_var(newVar)
+    
+    while queue:
+        constraint = queue.pop(0)
+        
+        for variable in constraint.get_scope():
+            for value in variable.cur_domain():
+                if not constraint.check_var_val(variable, value):
+                    variable.prune_value(value)
+                    pruned.append((variable, value))
+            if variable.cur_domain_size() == 0:
+                return False, pruned
+    return True, pruned
