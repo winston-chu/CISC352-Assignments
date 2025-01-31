@@ -1,7 +1,7 @@
 # =============================
-# Student Names:
-# Group ID:
-# Date:
+# Student Names: Travis Truong, Alexander Marinkovich, Winston Chu
+# Group ID: 63
+# Date: Thursday, January 30, 2025
 # =============================
 # CISC 352 - W23
 # heuristics.py
@@ -38,10 +38,22 @@ var_ordering == a function with the following template
 
 def ord_dh(csp):
     ''' return next Variable to be assigned according to the Degree Heuristic '''
-    # IMPLEMENT
-    pass
+    next_var = None
+
+    # Find the variable that has the most constraints with other unassigned variables
+    for var in csp.get_all_unasgn_vars():
+        if next_var == None or len(csp.get_cons_with_var(var)) > len(csp.get_cons_with_var(next_var)):
+            next_var = var
+        
+    return next_var
 
 def ord_mrv(csp):
     ''' return Variable to be assigned according to the Minimum Remaining Values heuristic '''
-    # IMPLEMENT
-    pass
+    next_var = None
+    
+    # Find the variable with the smallest domain size (minimum legal values)
+    for var in csp.get_all_unasgn_vars():
+        if next_var is None or var.cur_domain_size() < next_var.cur_domain_size():
+            next_var = var
+        
+    return next_var
