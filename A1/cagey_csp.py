@@ -97,7 +97,7 @@ def binary_ne_grid(cagey_grid):
     for i in range(n):
         row = []
         for j in range(n):
-            var = f"V_{i},{j}"
+            var = f"Cell({i + 1},{j + 1})"
             domain = list(range(1, n + 1))  
             row.append(Variable(var, domain))  
         array.append(row)
@@ -137,7 +137,7 @@ def nary_ad_grid(cagey_grid):
     for i in range(n):
         row = []
         for j in range(n):
-            var = f"V_{i},{j}"
+            var = f"Cell({i + 1},{j + 1})"
             domain = list(range(1, n + 1))  
             row.append(Variable(var, domain))  
         array.append(row)
@@ -180,7 +180,9 @@ def cagey_csp_model(cagey_grid):
 
     # Add cage constraints
     for target, cells, operator in cages:
+        cage_op = Variable(f"Cage_op({target}:{operator}:{[dict[cell] for cell in cells]})", ['+', '-', '/', '*', 'f'])
         in_cage = [dict[cell] for cell in cells]
+        # in_cage = [cage_op] + [dict[cell] for cell in cells]
         constraint = Constraint(f"Cage_{cells}", in_cage)
         
         satisfying_tuples = []
@@ -242,6 +244,6 @@ def cagey_csp_model(cagey_grid):
         if satisfying_tuples:
             constraint.add_satisfying_tuples(satisfying_tuples)
             csp.add_constraint(constraint)
-    
+            
     # Return csp and list of variables
-    return csp, vars
+    return csp, [cage_op] + vars
