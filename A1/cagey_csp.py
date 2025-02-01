@@ -181,15 +181,16 @@ def cagey_csp_model(cagey_grid):
     # Add cage constraints
     for target, cells, operator in cages:
         cage_op = Variable(f"Cage_op({target}:{operator}:{[dict[cell] for cell in cells]})", ['+', '-', '/', '*', 'f'])
-        in_cage = [dict[cell] for cell in cells]
-        # in_cage = [cage_op] + [dict[cell] for cell in cells]
+        # in_cage = [dict[cell] for cell in cells]
+        csp.add_var(cage_op)
+        in_cage = [cage_op] + [dict[cell] for cell in cells]
         constraint = Constraint(f"Cage_{cells}", in_cage)
         
         satisfying_tuples = []
         for perm in product(range(1, n+1), repeat=len(cells)):
             if operator == '+':
                 if sum(perm) == target:
-                    satisfying_tuples.append(perm)
+                    satisfying_tuples.append((operator,) + perm)
 
             elif operator == '-':
                 diff = perm[0]
@@ -198,14 +199,14 @@ def cagey_csp_model(cagey_grid):
                     if diff < target:
                         break
                 if diff == target:
-                    satisfying_tuples.append(perm)
+                    satisfying_tuples.append((operator,) + perm)
 
             elif operator == '*':
                 prod = 1
                 for p in perm:
                     prod *= p
                 if prod == target:
-                    satisfying_tuples.append(perm)
+                    satisfying_tuples.append((operator,) + perm)
 
             elif operator == '/':
                 quot = perm[0]
@@ -216,20 +217,23 @@ def cagey_csp_model(cagey_grid):
                     if quot < target:
                         break
                 if quot == target:
-                    satisfying_tuples.append(perm)
+                    satisfying_tuples.append((operator,) + perm)
 
             elif operator == '?':
+                # Addition or multiplication
                 if (sum(perm) == target or (perm[0] * perm[1] if len(perm) == 2 else 1) == target):
-                    satisfying_tuples.append(perm)
+                    satisfying_tuples.append((operator,) + perm)
                     break
+                # Subtraction
                 diff = perm[0]
                 for p in range(1, len(perm)):
                     diff -= perm[p]
                     if diff < target:
                         break
                 if diff == target:
-                    satisfying_tuples.append(perm)
+                    satisfying_tuples.append((operator,) + perm)
                     break
+                # Division
                 quot = perm[0]
                 for p in range(1, len(perm)):
                     if quot % perm[p] != 0:
@@ -238,7 +242,7 @@ def cagey_csp_model(cagey_grid):
                     if quot < target:
                         break
                 if quot == target:
-                    satisfying_tuples.append(perm)
+                    satisfying_tuples.append((operator,) + perm)
                     break
         
         if satisfying_tuples:
