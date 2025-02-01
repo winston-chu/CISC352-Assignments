@@ -181,7 +181,6 @@ def cagey_csp_model(cagey_grid):
     # Add cage constraints
     for target, cells, operator in cages:
         cage_op = Variable(f"Cage_op({target}:{operator}:{[dict[cell] for cell in cells]})", ['+', '-', '/', '*', 'f'])
-        # in_cage = [dict[cell] for cell in cells]
         csp.add_var(cage_op)
         in_cage = [cage_op] + [dict[cell] for cell in cells]
         constraint = Constraint(f"Cage_{cells}", in_cage)
@@ -244,10 +243,9 @@ def cagey_csp_model(cagey_grid):
                 if quot == target:
                     satisfying_tuples.append((operator,) + perm)
                     break
-        
-        if satisfying_tuples:
-            constraint.add_satisfying_tuples(satisfying_tuples)
-            csp.add_constraint(constraint)
+  
+        constraint.add_satisfying_tuples(satisfying_tuples)
+        csp.add_constraint(constraint)
             
     # Return csp and list of variables
     return csp, [cage_op] + vars
