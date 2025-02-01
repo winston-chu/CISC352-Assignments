@@ -85,6 +85,7 @@ An example of a 3x3 puzzle would be defined as:
 
 from cspbase import *
 from itertools import permutations
+from itertools import product
 
 def binary_ne_grid(cagey_grid):
     # Get grid size and list of cages
@@ -183,33 +184,64 @@ def cagey_csp_model(cagey_grid):
         constraint = Constraint(f"Cage_{cells}", in_cage)
         
         satisfying_tuples = []
-        for perm in permutations(range(1, n+1), len(cells)):
+        for perm in product(range(1, n+1), repeat=len(cells)):
             if operator == '+':
                 if sum(perm) == target:
                     satisfying_tuples.append(perm)
 
             elif operator == '-':
-                if max(perm) - min(perm) == target:
+                diff = perm[0]
+                for p in range(1, len(perm)):
+                    diff -= perm[p]
+                    if diff < target:
+                        break
+                if diff == target:
                     satisfying_tuples.append(perm)
 
             elif operator == '*':
-                product = 1
+                prod = 1
                 for p in perm:
-                    product *= p
-                if product == target:
+                    prod *= p
+                if prod == target:
                     satisfying_tuples.append(perm)
 
             elif operator == '/':
-                if (max(perm) / min(perm)) == target and max(perm) % min(perm) == 0:
+                quot = perm[0]
+                for p in range(1, len(perm)):
+                    if quot % perm[p] != 0:
+                        break
+                    quot //= perm[p]
+                    if quot < target:
+                        break
+                if quot == target:
                     satisfying_tuples.append(perm)
 
             elif operator == '?':
-                if (sum(perm) == target or max(perm) - min(perm) == target or (perm[0] * perm[1] if len(perm) == 2 else 1) == target
-                    or (max(perm) / min(perm)) == target and max(perm) % min(perm) == 0):
+                if (sum(perm) == target or (perm[0] * perm[1] if len(perm) == 2 else 1) == target):
                     satisfying_tuples.append(perm)
+                    break
+                diff = perm[0]
+                for p in range(1, len(perm)):
+                    diff -= perm[p]
+                    if diff < target:
+                        break
+                if diff == target:
+                    satisfying_tuples.append(perm)
+                    break
+                quot = perm[0]
+                for p in range(1, len(perm)):
+                    if quot % perm[p] != 0:
+                        break
+                    quot //= perm[p]
+                    if quot < target:
+                        break
+                if quot == target:
+                    satisfying_tuples.append(perm)
+                    break
         
-        constraint.add_satisfying_tuples(satisfying_tuples)
-        csp.add_constraint(constraint)
+        if satisfying_tuples:
+            constraint.add_satisfying_tuples(satisfying_tuples)
+            csp.add_constraint(constraint)
     
     # Return csp and list of variables
     return csp, vars
