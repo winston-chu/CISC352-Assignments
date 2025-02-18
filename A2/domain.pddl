@@ -27,15 +27,13 @@
         (has-key ?key - key)                        ; Hero is holding a key
         (free-arm)                                    ; Hero is not holding a key
         (locked ?cor - corridor)        ; Corridor is locked
-        (locked-col ?col - colour)
+        (locked-col ?cor - corridor ?col - colour)
         (risky ?cor - corridor)                       ; Corridor collapses after use
         (messy ?loc - location)                     ; Room is messy
         (key-colour ?key - key ?col - colour)       ; Key color
         (has-use ?key - key)                        ; Key has uses left
         (one-use ?key - key)                        ; Key can be used once
         (two-use ?key - key)                        ; Key can be used twice
-        (multi-use ?key - key)                      ; Key can be used infinitely
-        (dead-key ?key - key)                       ; Key out of uses
 
         ; IMPLEMENT ME
 
@@ -142,7 +140,7 @@
             (has-key ?k)
             (has-use ?k)
             (locked ?cor)
-            (locked-col ?col)
+            (locked-col ?cor ?col)
             (key-colour ?k ?col)
             (hero-at ?loc)
             (connected ?loc ?cor)
