@@ -42,8 +42,8 @@
 
     ; Key locations
     (key-loc key1 loc-2-2)
-    (key-loc key2 loc-4-2)
-    (key-loc key3 loc-2-4)
+    (key-loc key2 loc-2-4)
+    (key-loc key3 loc-4-2)
     (key-loc key4 loc-4-4)
 
     ; Locked corridors
@@ -54,7 +54,7 @@
     (locked c2434)
     (locked-col c2434 red)
     (locked c3444)
-    (locked-col c3444 purple)
+    (locked-col c3444 yellow)
     (locked c3132)
     (locked-col c3132 rainbow)
 

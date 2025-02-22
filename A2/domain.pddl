@@ -22,7 +22,7 @@
 
         ; One predicate given for free!
         (hero-at ?loc - location)
-        (connected ?loc ?cor - corridor)       ; Corridor connecting to a room
+        (connected ?loc - location ?cor - corridor)       ; Corridor connecting to a room
         (key-loc ?key - key ?loc - location)        ; Key location
         (has-key ?key - key)                        ; Hero is holding a key
         (free-arm)                                    ; Hero is not holding a key
@@ -34,6 +34,7 @@
         (has-use ?key - key)                        ; Key has uses left
         (one-use ?key - key)                        ; Key can be used once
         (two-use ?key - key)                        ; Key can be used twice
+        (destroyed ?cor - corridor)                         ; Destroyed corridor
 
         ; IMPLEMENT ME
 
@@ -54,7 +55,8 @@
         :precondition (and
 
             (hero-at ?from)
-            (not (messy ?cor))
+            (not (hero-at ?to))
+            (not (destroyed ?cor))
             (connected ?to ?cor)
             (connected ?from ?cor)
             (not (locked ?cor))
@@ -65,7 +67,7 @@
 
             (not (hero-at ?from))
             (hero-at ?to)
-            (when (risky ?cor) (messy ?to))
+            (when (risky ?cor) (and (destroyed ?cor) (messy ?to)))
 
         )
     )
