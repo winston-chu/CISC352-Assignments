@@ -1,9 +1,6 @@
-a .docx file, a .txt file, or a .pdf file containing the list of students who worked on the project, their
-student numbers, NetIDs, and a short description of who contributed what.
-
 Group member 1: Winston Chu    
-Student number:
-NetID: 
+Student number: 20337972
+NetID: 21TCYT
 Contribution: Completed domain.pddl and p01.pddl
 
 Group member 2: Travis Truong   
@@ -12,6 +9,6 @@ NetID:
 Contribution: Completed p02.pddl and p03.pddl
 
 Group member 3: Alexander Marinkovich   
-Student number:
-NetID: 
+Student number: 20361953
+NetID: 22wjc
 Contribution: Created the problem setting for p04 and completed p04.pddl
