@@ -12,6 +12,9 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 '''Implement the methods from the classes in inference.py here'''
+import inference
+import busters
+from util import manhattanDistance
 
 import util
 from util import raiseNotDefined
@@ -41,6 +44,12 @@ def normalize(self):
     {}
     """
     "*** YOUR CODE HERE ***"
+
+    total = self.total()
+    if total != 0 and len(self) != 0:
+        for key in self.keys():
+            self[key] = self[key] / total
+
     raiseNotDefined()
 
 def sample(self):
@@ -65,6 +74,15 @@ def sample(self):
     0.0
     """
     "*** YOUR CODE HERE ***"
+    
+    total_sum = self.total()
+    random_value = random.uniform(0, total_sum)
+    total = 0
+    for key, value in self.items():
+        total += value
+        if random_value < total:
+            return key
+        
     raiseNotDefined()
 
 
@@ -73,8 +91,16 @@ def getObservationProb(self, noisyDistance, pacmanPosition, ghostPosition, jailP
     Return the probability P(noisyDistance | pacmanPosition, ghostPosition).
     """
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
 
+    if ghostPosition == jailPosition:
+        if noisyDistance is None:
+            return 1.0
+        else:
+            return 0.0  
+    if noisyDistance is None:  
+        return 0.0
+    actual_distance = manhattanDistance(pacmanPosition, ghostPosition)
+    return busters.getObservationProbability(noisyDistance, actual_distance)
 
 
 def observeUpdate(self, observation, gameState):
