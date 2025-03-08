@@ -140,13 +140,39 @@ class GreedyBustersAgent(BustersAgent):
         pacmanPosition = gameState.getPacmanPosition()
         legal = [a for a in gameState.getLegalPacmanActions()]
         livingGhosts = gameState.getLivingGhosts()
-        livingGhostPositionDistributions = \
-            [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
-             if livingGhosts[i+1]]
-
-
+        livingGhostPositionDistributions = [beliefs for i, beliefs in enumerate(self.ghostBeliefs) if livingGhosts[i+1]]
 
 
         "*** YOUR CODE HERE ***"
+        # Step 1: Find the closest ghost
+        closestGhostPos = None
+        minDistance = float('inf')
+
+        # Loop through each ghost's belief distribution
+        for belief in livingGhostPositionDistributions:
+            
+            # Find the ghost's most likely position (the position with the highest probability)
+            mostLikelyPos = max(belief.items(), key=lambda item: item[1])[0]
+            distance = self.distancer.getDistance(pacmanPosition, mostLikelyPos)
+            
+            # Keep track if this ghost is the closest one so far
+            if distance < minDistance:
+                minDistance = distance
+                closestGhostPos = mostLikelyPos
 
 
+        # Step 2: Choose the best action (to move pacman to the closest ghost)
+        bestAction = None
+        minSuccessorDistance = float('inf')
+        
+        # Determine pacman's new position for each action
+        for action in legal:
+            successorPosition = Actions.getSuccessor(pacmanPosition, action)
+            successorDistance = self.distancer.getDistance(successorPosition, closestGhostPos)
+
+            # Keep track of the best action (that moves pacman closest to the ghost)
+            if successorDistance < minSuccessorDistance:
+                minSuccessorDistance = successorDistance
+                bestAction = action
+
+        return bestAction
