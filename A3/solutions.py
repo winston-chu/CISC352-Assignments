@@ -50,8 +50,6 @@ def normalize(self):
         for key in self.keys():
             self[key] = self[key] / total
 
-    raiseNotDefined()
-
 def sample(self):
     """
     Draw a random sample from the distribution and return the key, weighted
@@ -82,8 +80,6 @@ def sample(self):
         total += value
         if random_value < total:
             return key
-        
-    raiseNotDefined()
 
 
 def getObservationProb(self, noisyDistance, pacmanPosition, ghostPosition, jailPosition):
@@ -119,7 +115,18 @@ def observeUpdate(self, observation, gameState):
     position is known.
     """
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
+    
+    pacmanPosition = gameState.getPacmanPosition()
+    jailPosition = self.getJailPosition()
+
+    if observation is None:
+        self.beliefs = inference.DiscreteDistribution()
+        self.beliefs[jailPosition] = 1.0
+    else:
+        for position in self.allPositions:
+            prob = self.getObservationProb(observation, pacmanPosition, position, jailPosition)
+            self.beliefs[position] *= prob
+
     self.beliefs.normalize()
 
 
@@ -133,4 +140,14 @@ def elapseTime(self, gameState):
     current position is known.
     """
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
+    
+    newBeliefs = inference.DiscreteDistribution()
+    
+    for oldPos in self.allPositions:
+        newPosDist = self.getPositionDistribution(gameState, oldPos)
+        oldBelief = self.beliefs[oldPos]
+        
+        for newPos, prob in newPosDist.items():
+            newBeliefs[newPos] += oldBelief * prob
+    
+    self.beliefs = newBeliefs
